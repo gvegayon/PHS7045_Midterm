@@ -1,8 +1,8 @@
 ---
 format: pdf
-author: John Doe
-title: My fancy presentation
-subtitle: For PHS 7045
+author: Sophie Huebler
+title: Gibbs-Metropolis-Hastings Hybrid Algorithm
+subtitle: Binomial Model with Normal Random Effects for Meta-Analysis
 ---
 
 # Section 1
