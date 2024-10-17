@@ -1,14 +1,89 @@
 ---
-title: My fancy presentation
-subtitle: For PHS 7045
-author: John Doe
+title: Meta-Analsis for the Binomial Model with Normal Random Effects
+subtitle: Heirarchical and Empirical Bayesian Approaches
+author: Sophie Huebler
 format: revealjs
 embed-resources: true
 ---
 
-# Section 1
 
-## Slide 1
+
+# Section 1: Introduction to the Problem
+
+## The Goal
+1) Create a computationally efficient implementation of the gibbs-metropolis-hastings hybrid algorithm for a heirarchical bayesian approach to meta analysis.
+
+2) Write a function to compute mariginal likelihood and optimize it to empirically estimate parameters for random effects for an empirical bayesian approach to meta analysis.
+
+## Meta-Analysis {.scrollable .smaller}
+We will use a classic meta-analysis case to motivate this problem. Our treatment effect of interest is the odds ratio of an event occurring between treatment and control groups, and there are 7 studies which have estimated this effect by recording the number of events and sample size in a treatment sample and a control sample. 
+
+```{r}
+source("data/read_data.R")
+```
+
+```{r}
+dat |>
+  dplyr::select(trial:nic)|>
+  kableExtra::kbl(digits = 2,
+      caption = "Data",
+      col.names = c("Trial",
+                    "R_it", "N_it",
+                    "R_ic", "N_ic"))|>
+  kableExtra::kable_classic_2(html_font = "Cambria")
+```
+
+## Meta-Analysis {.scrollable .smaller}
+
+Each study therefore has a log odds ratio $\theta_i$ which estimates the study specific treatment effect, and a standard error for that estimate. We assume that due to differing study protocol and random chance, each study is estimating a log odds ratio that is drawn from a normal distribution with center $\mu$ and variance $\tau^2$. We will call this the random effect population prior $\pi(\theta_i | \mu, \tau)$.
+
+```{r}
+dat |>
+  dplyr::select(trial:v_i)|>
+  kableExtra::kbl(digits = 2,
+      caption = "Data",
+      col.names = c("Trial",
+                    "R_it", "N_it",
+                    "R_ic", "N_ic",
+                    "log(OR)", "Var(log(OR))"))|>
+  kableExtra::kable_classic_2(html_font = "Cambria")
+```
+
+
+## The Model
+
+$$
+\begin{aligned}
+&i \in i,…,k \hspace{0.5cm} and \hspace{0.5cm} j \in \{C,T\}\\
+& Y_{ij}| \pi_{ij},n_{ij} \sim Bin(n_{ij}, \pi_{ij})\\
+&logit \pi_i^C | \gamma_i, \theta_i = \gamma_i - \theta_i/2\\
+&logit \pi_i^T | \gamma_i, \theta_i = \gamma_i + \theta_i/2\\
+& logit(\frac{\pi_{iT}}{\pi_{iC}}) = \theta_i | \mu, \tau^2 \sim N(\mu, \tau^2)\\
+& \mu \sim N(a_1, b_1 )\\
+& 1/\tau^2\sim gamma(a_2, b_2)\end{aligned}
+$$
+
+
+## Heirarichal Estimation
+
+From the model, we can easily write out the joint distribution and the full conditionals for $\mu$, $\tau^2$, $\bf{\theta}$, and $\bf{\gamma}$ (I leave this as an exercise to the listener). This allows us to use the gibbs sampling procedure to iteratively update posteriors. It is however important to note that the thetas and gammas do not have closed form full conditionals. Therefore we must also incorporate a metropolis hastings component wise updating procedure. 
+
+## Empirical Estimation
+
+Instead of iteratively updating the $\mu$ and $\tau^2$ variables, we can estimate them from the marginal likelihood using an MLE approach after integrating out all other parameters, thus reducing the problem to a single level model.
+
+
+
+# Section 2: Solution Plan
+
+## Modularization
+
+The 
+
+
+# Section 3: Preliminary Results
+
+
 
 
 ```{r}
