@@ -150,11 +150,26 @@ source("Functions/post_gamma.R")
 source("Functions/post_theta.R")
 source("Functions/mh.R")
 source("Functions/gibbs.R")
-source("Functions/gibbs_mh_run.R")
+source("Functions/mh_gibbs.R")
 ```
 
 ```{r}
-hypers <- set_hyperparameters()
+hyperparams <- set_hyperparameters()
+```
+
+```{r}
+benched <- bench::mark(
+  mh_gibbs_original(), 
+  mh_gibbs(), 
+  check = FALSE, 
+  relative = TRUE,
+  iterations = 1)
+
+benched <- benched[,2:9] %>% as.matrix()
+
+rownames(benched) <- c("original", "updated")
+
+benched
 ```
 
 ## Marginal Likelihood {.scrollable .smaller}

@@ -31,7 +31,7 @@
 
 
 mh_gibbs_original <- function(#Y a data frame with rit, nit, ric, nic, theta_i, gamma_i
-  Y,
+  Y = dat,
   
   #hyperparams
   #mean and var for mu
@@ -45,10 +45,10 @@ mh_gibbs_original <- function(#Y a data frame with rit, nit, ric, nic, theta_i, 
   b_tau2 = 0.001,
   
   #Number of simulations
-  sim = 1e5,
+  sim = 100,
   
   #Burn
-  burn = 2000){
+  burn = 10){
   
   # Set up  
   #number of studies
