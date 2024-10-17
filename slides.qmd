@@ -4,21 +4,30 @@ subtitle: Heirarchical and Empirical Bayesian Approaches
 author: Sophie Huebler
 format: revealjs
 embed-resources: true
+editor: 
+  markdown: 
+    wrap: 72
 ---
-
-
 
 # Section 1: Introduction to the Problem
 
 ## The Goal
-1) Create a computationally efficient implementation of the gibbs-metropolis-hastings hybrid algorithm for a heirarchical bayesian approach to meta analysis.
 
-2) Create a computationally efficient function to compute mariginal likelihood and optimize it to empirically estimate parameters for random effects for an empirical bayesian approach to meta analysis.
+1)  Create a computationally efficient implementation of the
+    gibbs-metropolis-hastings hybrid algorithm for a heirarchical
+    bayesian approach to meta analysis.
 
+2)  Create a computationally efficient function to compute mariginal
+    likelihood and optimize it to empirically estimate parameters for
+    random effects for an empirical bayesian approach to meta analysis.
 
 ## Meta-Analysis {.scrollable .smaller}
-We will use a classic meta-analysis case to motivate this problem. Our treatment effect of interest is the odds ratio of an event occurring between treatment and control groups, and there are 7 studies which have estimated this effect by recording the number of events and sample size in a treatment sample and a control sample. 
 
+We will use a classic meta-analysis case to motivate this problem. Our
+treatment effect of interest is the odds ratio of an event occurring
+between treatment and control groups, and there are 7 studies which have
+estimated this effect by recording the number of events and sample size
+in a treatment sample and a control sample.
 
 ```{r}
 #| label: some-code
@@ -45,7 +54,12 @@ dat |>
 
 ## Meta-Analysis {.scrollable .smaller}
 
-Each study therefore has a log odds ratio $\theta_i$ which estimates the study specific treatment effect, and a standard error for that estimate. We assume that due to differing study protocol and random chance, each study is estimating a log odds ratio that is drawn from a normal distribution with center $\mu$ and variance $\tau^2$. We will call this the random effect population prior $\pi(\theta_i | \mu, \tau)$.
+Each study therefore has a log odds ratio $\theta_i$ which estimates the
+study specific treatment effect, and a standard error for that estimate.
+We assume that due to differing study protocol and random chance, each
+study is estimating a log odds ratio that is drawn from a normal
+distribution with center $\mu$ and variance $\tau^2$. We will call this
+the random effect population prior $\pi(\theta_i | \mu, \tau)$.
 
 ```{r}
 dat |>
@@ -58,7 +72,6 @@ dat |>
                     "log(OR)", "Var(log(OR))"))|>
   kableExtra::kable_classic_2(html_font = "Cambria")
 ```
-
 
 ## The Model
 
@@ -73,44 +86,60 @@ $$
 & 1/\tau^2\sim gamma(a_2, b_2)\end{aligned}
 $$
 
-
 ## Heirarichal Estimation
 
-From the model, we can easily write out the joint distribution and the full conditionals for $\mu$, $\tau^2$, $\bf{\theta}$, and $\bf{\gamma}$ (I leave this as an exercise to the listener). This allows us to use the gibbs sampling procedure to iteratively update posteriors. It is however important to note that the thetas and gammas do not have closed form full conditionals. Therefore we must also incorporate a metropolis hastings component wise updating procedure. 
+From the model, we can easily write out the joint distribution and the
+full conditionals for $\mu$, $\tau^2$, $\bf{\theta}$, and $\bf{\gamma}$
+(I leave this as an exercise to the listener). This allows us to use the
+gibbs sampling procedure to iteratively update posteriors. It is however
+important to note that the thetas and gammas do not have closed form
+full conditionals. Therefore we must also incorporate a metropolis
+hastings component wise updating procedure.
 
 ## Empirical Estimation
 
-Instead of iteratively updating the $\mu$ and $\tau^2$ variables, we can estimate them from the marginal likelihood using an MLE approach after integrating out all other parameters, thus reducing the problem to a single level model.
-
-
+Instead of iteratively updating the $\mu$ and $\tau^2$ variables, we can
+estimate them from the marginal likelihood using an MLE approach after
+integrating out all other parameters, thus reducing the problem to a
+single level model.
 
 # Section 2: Solution Plan
 
 ## Heirarchical Bayesian Approach
 
-Full conditionals:
-- Write in both R and c++
-- Use microbenchmark to compare efficiency
+-   Full conditionals:
 
-Wrapper for the full algorithm:
-- Rewrite with data table so that storage and manipulation is easier
-- Pre-allocate memory
-- Use microbenchmark to comapre efficiency to original code
+    -    Write in both R and c++
+
+-   Wrapper for the full algorithm:
+
+    -   Rewrite with data table so that storage and manipulation is
+        easier
+
+    -    Pre-allocate memory
+
+-    Use microbenchmark to comapre efficiency to original code
 
 ## Empirical Bayesian Approach
 
-Marignal likelihood:
-- Use parallel programming for the R implementation that currently simulates average likelihood of the marginal likelihood
-- Write the full likelihood function in C++ and then use GNU scientific library for numeric integration
+-   Marignal likelihood
 
+    -   Use parallel programming for the R implementation that currently
+        simulates average likelihood of the marginal likelihood
+
+    -    Write the full likelihood function in C++ and then use GNU
+        scientific library for numeric integration
 
 # Section 3: Preliminary Results
 
 ## Heirarchical Bayesian {.scrollable .smaller}
-Currently all posterior functions are written in modularized format in R and wrapped in a function that stores the results as a data table.
 
-New function: 1 for loop
-Old function: 2 for loops, 4 lapply statements
+Currently all posterior functions are written in modularized format in R
+and wrapped in a function that stores the results as a data table.
+
+-   Old function: 2 for loops, 4 lapply statements
+
+-   New function: 1 for loop
 
 ```{r}
 source("Functions/Original_Code.R")
@@ -124,10 +153,14 @@ source("Functions/gibbs.R")
 source("Functions/gibbs_mh_run.R")
 ```
 
+```{r}
+hypers <- set_hyperparameters()
+```
 
 ## Marginal Likelihood {.scrollable .smaller}
 
 Original code:
+
 ```{r, echo = T}
 mlik_func <- function(mu,
                       tau2,
@@ -192,9 +225,3 @@ mlik_func <- function(mu,
 }
 
 ```
-
-
-
-
-
-
