@@ -42,5 +42,4 @@ dat <- metafor::escalc(measure = "OR",
   dplyr::mutate(sd_i = sqrt(v_i))|>
   dplyr::mutate(lower_ci = theta_i - 1.96*sd_i,
                 upper_ci = theta_i + 1.96*sd_i)|>
-  dplyr::mutate(gamma_i = 0.5*(qlogis(rit/nit)+qlogis(ric/nic)))|>
-  dplyr::select(trial:v_i)
+  dplyr::mutate(gamma_i = 0.5*(qlogis(rit/nit)+qlogis(ric/nic)))

@@ -11,7 +11,6 @@
 #       1) Remove lapply statements replace with single loop
 #           (maybe switch to cpp?)
 #       2) Modularization
-#       3) Pre allocating storage
 #
 #
 # Notes: - Use set_hyperparameters function to define hypers
@@ -32,17 +31,11 @@ mh <- function(Y,      #Data
                hypers  #Hyperparameters
                ){
   
-  #Pre allocate space for vectors from for loop
-  ##Current posteriors
-  current_post_thetas <- numeric(k)
-  current_post_gammas <- numeric(k)
+  #Pre allocate memory
+  thetas_new <- thetas
+  gammas_new <- gammas
   
-  ##Candidate posteriors
-  candidate_post_thetas <- numeric(k)
-  candidate_post_gammas <- numeric(k)
-  
-  
-  
+
   #Define candidates
   candidates_thetas <- rnorm(k, 
                              mean(as.numeric(thetas)), 
@@ -52,13 +45,16 @@ mh <- function(Y,      #Data
                              mean(as.numeric(gammas)), 
                              hypers$mh_scale)
   
+  #Define critical value
+  crit <- log(runif(1))
+  
   #Run posterior function on current and proposed data
-  # for thetas and gammas in a single loop
+  # for thetas and gammas and compare to crit value in a single loop
   
   for(i in 1:k){
     
     #Thetas 
-    current_post_thetas[i] <- post_theta(tau2 = tau2,
+    temp_theta_current <- post_theta(tau2 = tau2,
                                          mu = mu, 
                                          gamma = gammas[i], 
                                          theta = thetas[i],
@@ -66,7 +62,7 @@ mh <- function(Y,      #Data
                                          rc = Y[i, "ric"]) |>
       log()
     
-    candidate_post_thetas[i] <- post_theta(tau2 = tau2,
+    temp_theta_candidate <- post_theta(tau2 = tau2,
                                          mu = mu, 
                                          gamma = candidates_gammas[i], 
                                          theta = candidates_thetas[i],
@@ -74,8 +70,13 @@ mh <- function(Y,      #Data
                                          rc = Y[i, "ric"]) |>
       log()
     
+    if(crit < (temp_theta_candidate - temp_theta_current)){
+      thetas_new[i]<- candidates_thetas[i]
+    }
+    
     #Gammas
-    current_post_gammas[i] <- post_gamma(tau2 = tau2,
+    temp_gamma_current <- post_gamma(b_gamma = hypers$b_gamma,
+                                     tau2 = tau2,
                                          mu = mu, 
                                          gamma = gammas[i], 
                                          theta = thetas[i],
@@ -83,7 +84,8 @@ mh <- function(Y,      #Data
                                          rc = Y[i, "ric"]) |>
       log()
     
-    candidate_post_gammas[i] <- post_gamma(tau2 = tau2,
+    temp_gamma_candidate <- post_gamma(b_gamma = hypers$b_gamma,
+                                       tau2 = tau2,
                                            mu = mu, 
                                            gamma = candidates_gammas[i], 
                                            theta = candidates_thetas[i],
@@ -91,33 +93,18 @@ mh <- function(Y,      #Data
                                            rc = Y[i, "ric"]) |>
       log()
     
-  }
-  
-  #Divide posteriors = subtract log posteriors
-  logr_theta = proposed_post_theta - current_post_theta
-  logr_gamma = proposed_post_gamma - current_post_gamma
-  
-  #Update based R function
-  #Using uniformdensity
-  crit <- log(runif(1))
-  criteria_theta <- crit < logr_theta
-  criteria_gamma <- crit < logr_gamma
-  
-  #Vectorization
-  
-  #Inner loop (fix later for efficiency)
-  #Update estimates if ratio of posterior of current
-  #and proposed estimates is less than the log function
-  for(i in 1:k){
-    if(criteria_theta[i]){
-      thetas[j,i]<-candidates_thetas[i]
-    }else{
-      thetas[j,i] <- thetas[(j-1),i]
+    if(crit < (temp_gamma_candidate - temp_gamma_current)){
+      gammas_new[i]<- candidates_gammas[i]
     }
-    if(criteria_gamma[i]){
-      gammas[j,i]<-candidates_gammas[i]
-    }else{
-      gammas[j,i] <- gammas[(j-1),i]
-    }
-  }
+    
+    rm(temp_gamma_candidate,
+       temp_gamma_current,
+       temp_theta_candidate,
+       temp_theta_current)
+  } #End for loop
+  
+ ret <- list("thetas" = thetas_new,
+             "gammas" = gammas_new)
+ 
+ ret
 }

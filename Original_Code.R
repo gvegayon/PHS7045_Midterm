@@ -1,36 +1,36 @@
 #functions based on conditional posteriors 
 
 #closed form for mu and tau
-post_mu <- function(k, sigma, theta, b_mu){
-  rnorm(1, 
-        mean = sigma*sum(theta)/(k*sigma + 100),
-        sd = 1/sqrt(k*sigma + 100))
-}
+# post_mu <- function(k, sigma, theta, b_mu){
+#   rnorm(1, 
+#         mean = sigma*sum(theta)/(k*sigma + 100),
+#         sd = 1/sqrt(k*sigma + 100))
+# }
+# 
+# post_tau <- function(k, a_tau, b_tau, mu, theta){
+#   1/rgamma(1,
+#            shape = k/2 + a_tau,
+#            rate = 0.5*sum((theta-mu)^2) + b_tau)
+# }
+# 
+# #no closed form for gammas and thetas
+# post_theta <- function(tau2, mu, gamma, theta, rt, rc){
+#   exp(theta/2*(rt-rc))/
+#     ((1+exp(gamma - theta/2))^(rc)*(1+exp(gamma + theta/2))^(rt))*
+#     1/sqrt(2*pi*tau2)*
+#     exp(-1/(2*tau2)*(theta-mu)^2)
+# }
+# 
+# post_gamma <- function(b_gamma, mu, tau2, theta, gamma, rt, rc){
+#   exp(gamma*(rt-rc))/
+#     ((1+exp(gamma - theta/2))^(rc)*(1+exp(gamma + theta/2))^(rt))*
+#     1/sqrt(2*pi*b_gamma)*
+#     exp(-1/(2*tau2)*(gamma)^2)
+# }
 
-post_tau <- function(k, a_tau, b_tau, mu, theta){
-  1/rgamma(1,
-           shape = k/2 + a_tau,
-           rate = 0.5*sum((theta-mu)^2) + b_tau)
-}
-
-#no closed form for gammas and thetas
-post_theta <- function(tau2, mu, gamma, theta, rt, rc){
-  exp(theta/2*(rt-rc))/
-    ((1+exp(gamma - theta/2))^(rc)*(1+exp(gamma + theta/2))^(rt))*
-    1/sqrt(2*pi*tau2)*
-    exp(-1/(2*tau2)*(theta-mu)^2)
-}
-
-post_gamma <- function(b_gamma, mu, tau2, theta, gamma, rt, rc){
-  exp(gamma*(rt-rc))/
-    ((1+exp(gamma - theta/2))^(rc)*(1+exp(gamma + theta/2))^(rt))*
-    1/sqrt(2*pi*b_gamma)*
-    exp(-1/(2*tau2)*(gamma)^2)
-}
 
 
-
-mh_gibbs <- function(#Y a data frame with rit, nit, ric, nic, theta_i, gamma_i
+mh_gibbs_original <- function(#Y a data frame with rit, nit, ric, nic, theta_i, gamma_i
   Y,
   
   #hyperparams
