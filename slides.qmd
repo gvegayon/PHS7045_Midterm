@@ -13,10 +13,20 @@ embed-resources: true
 ## The Goal
 1) Create a computationally efficient implementation of the gibbs-metropolis-hastings hybrid algorithm for a heirarchical bayesian approach to meta analysis.
 
-2) Write a function to compute mariginal likelihood and optimize it to empirically estimate parameters for random effects for an empirical bayesian approach to meta analysis.
+2) Create a computationally efficient function to compute mariginal likelihood and optimize it to empirically estimate parameters for random effects for an empirical bayesian approach to meta analysis.
+
 
 ## Meta-Analysis {.scrollable .smaller}
 We will use a classic meta-analysis case to motivate this problem. Our treatment effect of interest is the odds ratio of an event occurring between treatment and control groups, and there are 7 studies which have estimated this effect by recording the number of events and sample size in a treatment sample and a control sample. 
+
+
+```{r}
+#| label: some-code
+library(MASS)
+library(epiworldR)
+library(tidyverse)
+library(metafor)
+```
 
 ```{r}
 source("data/read_data.R")
@@ -76,19 +86,37 @@ Instead of iteratively updating the $\mu$ and $\tau^2$ variables, we can estimat
 
 # Section 2: Solution Plan
 
-## Modularization
+## Heirarchical Bayesian Approach
 
-The 
+Full conditionals:
+- Write in both R and c++
+- Use microbenchmark to compare efficiency
+
+Wrapper for the full algorithm:
+- Rewrite with data table so that storage and manipulation is easier
+- Pre-allocate memory
+
+## Empirical Bayesian Approach
+
+Marignal likelihood:
+- Use parallel programming for the R implementation that currently simulates average likelihood of the marginal likelihood
+- Write the full likelihood function in C++ and then use GNU scientific library for numeric integration
 
 
 # Section 3: Preliminary Results
 
+## Functions
+Currently all posterior functions are written in R.  
+
+## Marginal Likelihood
+
+$$
+\begin{aligned}
+&\int_{\boldsymbol{\theta}} \int_{\boldsymbol{\gamma}} {n_i^T \choose r_i^T}{n_i^C \choose r_i^C} \frac{e^{(\gamma_i-\theta_i/2)^{r_i^C}}e^{(\gamma_i+\theta_i/2)^{r_i^T}}}{(1+ e^{\gamma_i-\theta_i/2})^{r_i^C}(1+e^{\gamma_i+\theta_i/2})^{r_i^T}}\frac{1}{\sqrt{2\pi 100}}e^{-\frac{1}{2*100}(\gamma_i-0)^2}\\
+& \times \frac{1}{\sqrt{2\pi \tau^2}}e^{-\frac{1}{2*\tau^2}(\theta_i-\mu)^2}
+\frac{0.001^{0.001}}{\Gamma(0.001)}(1/\tau^2)^{0.001-1}e^{\frac{-0.001}{\tau^2}} d\boldsymbol{\gamma}d\boldsymbol{\theta}
+\end{aligned}
+$$
 
 
 
-```{r}
-#| label: some-code
-library(MASS)
-library(epiworldR)
-
-```
