@@ -57,11 +57,4 @@ gibbs <- function(Y,      #Data
 }
 
 
-gibbs(dat,  
-      mu_test,     
-      tau2_test,   
-      gammas_test, 
-      thetas_test, 
-      7,           
-      hypers 
-)
+
