@@ -1,5 +1,5 @@
 ---
-title: Meta-Analsis for the Binomial Model with Normal Random Effects
+title: Meta-Analysis for the Binomial Model with Normal Random Effects
 subtitle: Heirarchical and Empirical Bayesian Approaches
 author: Sophie Huebler
 format: revealjs
@@ -142,7 +142,7 @@ and wrapped in a function that stores the results as a data table.
 -   New function: 1 for loop
 
 ```{r}
-source("Functions/Original_Code.R")
+source("Functions/mh_gibbs_original.R")
 source("Functions/set_hyperparameters.R")
 source("Functions/post_mu.R")
 source("Functions/post_tau2.R")

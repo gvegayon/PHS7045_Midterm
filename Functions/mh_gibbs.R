@@ -7,7 +7,7 @@
 # Purpose: Wrapper for full algorithm
 #
 # Advanced R Goals: 
-#       1) Use data table
+#       1) Use data table (replace list output)
 #
 #
 # Notes: - Use set_hyperparameters function to define hypers

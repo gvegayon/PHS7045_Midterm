@@ -9,8 +9,9 @@
 #
 # Advanced R Goals: 
 #       1) Remove lapply statements replace with single loop
-#           (maybe switch to cpp?)
+#           (maybe switch to cpp?) (maybe parallelize?)
 #       2) Modularization
+#       
 #
 #
 # Notes: - Use set_hyperparameters function to define hypers
@@ -18,6 +19,7 @@
 #         current value and variance low (suggested
 #         by Dan in class for scaling 0.23, but can 
 #         set using the set_parameters function)
+#         - Depending on size of k, check for efficiency of parallelizing
 #############################################################'    
 
 ##Metropolis-Hastings procedure for
