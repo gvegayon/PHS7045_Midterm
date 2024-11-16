@@ -166,6 +166,11 @@ mh_gibbs_original <- function(#Y a data frame with rit, nit, ric, nic, theta_i, 
     
     #Update based R function
     #Using uniformdensity
+    # Same here! You can simply generate a large array of runifs outside
+    # of the loop and then access it via indexing, e.g.,
+    # my_log_runifs <- log(runif(nsteps))
+    # ... code code code ...
+    # criteria_theta <- my_log_runifs[nstep_i] < logr_theta
     criteria_theta <- log(runif(1)) < logr_theta
     criteria_gamma <- log(runif(1)) < logr_gamma
     
