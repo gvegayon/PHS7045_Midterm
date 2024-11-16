@@ -39,6 +39,16 @@ mh <- function(Y,      #Data
   
 
   #Define candidates
+  # One source of speedup that you could get is from drawing
+  # all random samples at once at a higher level.
+  # For instance, instead of drawing four at a time, you could
+  # draw k * nsteps random variables, e.g.,
+  # normal_samples <- matrix(rnorm(nsteps * k), ncol = k)
+  # 
+  # ... code code ...
+  #
+  # candidates_thetas <- normal_samples[step_i, ] * hypers$mh_scale +
+  #  mean(as.numeric(thetas)) 
   candidates_thetas <- rnorm(k, 
                              mean(as.numeric(thetas)), 
                              hypers$mh_scale)
@@ -48,6 +58,7 @@ mh <- function(Y,      #Data
                              hypers$mh_scale)
   
   #Define critical value
+  # Same thing here, single draws of rand numbers are discouraged.
   crit <- log(runif(1))
   
   #Run posterior function on current and proposed data
